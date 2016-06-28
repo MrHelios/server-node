@@ -1,14 +1,8 @@
 var http = require('http');
-var fs = require('fs');
-
-urls = {'/': './static/index.html'};
+var urls = require('./app/urls');
 
 http.createServer(function(request, response) {
 
-  if( request.url in urls ) {
-    fs.readFile(urls[request.url], function(err,html) {
-      response.write(html);
-      response.end();
-    })
-  }
+  if( request.url in urls.urls ) urls.urls[request.url](request, response)
+
 }).listen(8080);
