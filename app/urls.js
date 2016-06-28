@@ -1,7 +1,8 @@
 var vista = require('./vista.js');
 
 var urls = {
-  '/': vista.index
+  '/': vista.index,
+  '/mas': vista.mas
 };
 
 module.exports.urls = urls;
