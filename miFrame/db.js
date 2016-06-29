@@ -1,21 +1,24 @@
 var sqlite3 = require('sqlite3').verbose();
 
-function Modelo(nombre,archivo) {
-
+function DB(archivo) {
   this.archivo = archivo;
-  this.nombre = nombre;
-  this.valores = {'id':'INTEGER PRIMARY KEY'};
-
   this.db = null;
   self = this;
 
-  this.agregarValores = function(k,v) {
-    this.valores[k] = v;
-  }
-
-  // Requiere que el archivo exista.
   this.crearDatabase = function() {
     this.db = new sqlite3.Database(this.archivo);
+  }
+}
+
+function Tabla(nombre, db) {
+  //DB.call(this, archivo);
+  this.db = db;
+  self = this;
+  this.nombre = nombre;
+  this.valores = {};
+
+  this.agregarValores = function(k,v) {
+    this.valores[k] = v;
   }
 
   this.crearTabla = function() {
@@ -26,32 +29,51 @@ function Modelo(nombre,archivo) {
         s += i +' '+ self.valores[i];
       }
       s += ')';
-      //console.log(s);
-      self.db.run('CREATE TABLE ' + self.nombre + ' ' + s);
+      console.log(s);
+      self.db.run('CREATE TABLE IF NOT EXISTS ' + self.nombre + ' ' + s);
     });
   }
 
   this.insertar = function(valores) {
-    var s = Modelo.prototype.acomodarINSERT(valores);
+    var s = Tabla.prototype.acomodarINSERT(valores);
 
-    //console.log(s);
-    self.db.run('INSERT INTO ' + self.nombre + ' VALUES ' + s);
+    console.log('INSERT INTO ' + this.nombre + ' VALUES ' + s);
+    this.db.run('INSERT INTO ' + this.nombre + ' VALUES ' + s);
   }
 
   this.mostrar = function() {
-    var s = Modelo.prototype.acomodarSELECT(self.valores);
+    var s = Tabla.prototype.acomodarSELECT(this.valores);
 
-    //console.log('Mostrar:' + s);
-    self.db.each('SELECT ' + s + ' FROM ' + self.nombre, function(err, fila) {
+    console.log('Mostrar:' + s);
+    this.db.each('SELECT ' + s + ' FROM ' + this.nombre, function(err, fila) {
       if(err) console.log(err);
       else {
         console.log(fila);
       }
     });
   }
+
+  this.buscar = function(num) {
+    this.db.each('SELECT * FROM ' + this.nombre + ' WHERE id=' + num, function(err, fila) {
+      if(err) console.log(err);
+      else {
+        console.log('Resultado: ' + fila);
+      }
+    });
+  }
+
+  this.eliminar = function(num) {
+    this.db.each('DELETE FROM ' + this.nombre + ' WHERE id=' + num, function(err, fila) {
+      if(err) console.log(err);
+      else {
+        console.log('Eliminado.');
+      }
+    });
+  }
+
 }
 
-Modelo.prototype.acomodarSELECT = function(valores) {
+Tabla.prototype.acomodarSELECT = function(valores) {
   s = '';
   for(var i in valores) {
     s += i + ',';
@@ -61,7 +83,7 @@ Modelo.prototype.acomodarSELECT = function(valores) {
   return s;
 }
 
-Modelo.prototype.acomodarINSERT = function(valores) {
+Tabla.prototype.acomodarINSERT = function(valores) {
   s = '(';
   for(var i in valores) {
     s += valores[i] + ',';
@@ -72,4 +94,5 @@ Modelo.prototype.acomodarINSERT = function(valores) {
   return s;
 }
 
-module.exports.Modelo = Modelo;
+module.exports.DB = DB;
+module.exports.Tabla = Tabla;
