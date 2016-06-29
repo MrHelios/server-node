@@ -2,6 +2,9 @@ var miframe = require('../miFrame/template.js');
 
 index = function(request, response) {
   // Boludear con el GET o POST
+  if(request.method == 'GET') {
+    // Hacer algo, bro.
+  };
   miframe.render(__dirname + '/static/index.html', response);
 }
 
