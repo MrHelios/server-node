@@ -10,8 +10,7 @@ function DB(archivo) {
   }
 }
 
-function Tabla(nombre, db) {
-  //DB.call(this, archivo);
+function Tabla(nombre, db) {  
   this.db = db;
   self = this;
   this.nombre = nombre;

@@ -1,9 +1,18 @@
 <html>
 <head>
   <title>Index</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    socket.on('hola', function(data) {
+      console.log(data);
+      socket.emit('saludos', 'te saludo de la pagina, bro.');
+    });
+  </script>
 </head>
 
 <body>
   <h1>Index</h1>
+  <a href="/mas">Vamos a mas</a>
 </body>
 </html>
